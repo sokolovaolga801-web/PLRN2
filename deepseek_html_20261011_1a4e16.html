@@ -1,0 +1,720 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Инструкция: Согласование ПЛРН на Госуслугах</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-color: #ffffff;
+        }
+
+        .slider-container {
+            width: 700px;
+            height: 700px;
+            background-color: #ffffff;
+            border-radius: 12px;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            position: relative;
+            border: 1px solid #dbeafe;
+        }
+
+        /* Полноэкранный режим */
+        .slider-container:fullscreen {
+            width: 100vw;
+            height: 100vh;
+            border-radius: 0;
+            border: none;
+        }
+
+        .slider-container:-webkit-full-screen {
+            width: 100vw;
+            height: 100vh;
+            border-radius: 0;
+            border: none;
+        }
+
+        .slider-header {
+            background: linear-gradient(135deg, #0055b8, #0077e6);
+            color: white;
+            padding: 15px 25px;
+            text-align: center;
+            flex-shrink: 0;
+            position: relative;
+        }
+
+        .slider-header h1 {
+            font-size: 18px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+
+        .slider-header p {
+            font-size: 12px;
+            opacity: 0.85;
+            margin-top: 4px;
+        }
+
+        .fullscreen-btn {
+            position: absolute;
+            top: 50%;
+            right: 15px;
+            transform: translateY(-50%);
+            background: rgba(255, 255, 255, 0.15);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            color: #ffffff;
+            width: 34px;
+            height: 34px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.2s, transform 0.2s;
+            padding: 0;
+        }
+
+        .fullscreen-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .fullscreen-btn svg {
+            width: 18px;
+            height: 18px;
+            fill: currentColor;
+        }
+
+        .slides-wrapper {
+            flex: 1;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .slide {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            padding: 15px 20px;
+            display: flex;
+            flex-direction: column;
+            opacity: 0;
+            transition: opacity 0.4s ease, transform 0.4s ease;
+            transform: translateX(20px);
+            pointer-events: none;
+        }
+
+        .slide.active {
+            opacity: 1;
+            transform: translateX(0);
+            pointer-events: auto;
+        }
+
+        .slide-number {
+            font-size: 12px;
+            color: #0077e6;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 6px;
+        }
+
+        .slide-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #1a2a3a;
+            margin-bottom: 8px;
+            line-height: 1.3;
+        }
+
+        .slide-description {
+            font-size: 13px;
+            color: #4a5a6a;
+            line-height: 1.5;
+            margin-bottom: 10px;
+            flex-shrink: 0;
+        }
+
+        .image-container {
+            flex: 1;
+            background-color: #f8fbff;
+            border: 1px solid #dbeafe;
+            border-radius: 6px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            position: relative;
+            min-height: 120px;
+        }
+
+        .image-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            display: block;
+        }
+
+        .image-placeholder {
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 15px;
+            text-align: center;
+            color: #5a7a9a;
+            font-size: 13px;
+        }
+
+        .image-placeholder .icon {
+            font-size: 34px;
+            margin-bottom: 8px;
+        }
+
+        .image-placeholder .filename {
+            font-weight: 600;
+            color: #0055b8;
+            margin-top: 6px;
+            font-size: 14px;
+        }
+
+        .slider-footer {
+            padding: 10px 20px;
+            background-color: #f8fbff;
+            border-top: 1px solid #dbeafe;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-shrink: 0;
+        }
+
+        .nav-btn {
+            background-color: #ffffff;
+            border: 1px solid #0077e6;
+            color: #0077e6;
+            padding: 6px 16px;
+            border-radius: 5px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .nav-btn:hover:not(:disabled) {
+            background-color: #0077e6;
+            color: white;
+        }
+
+        .nav-btn:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+            border-color: #a0c4e8;
+            color: #a0c4e8;
+        }
+
+        .progress-container {
+            flex: 1;
+            margin: 0 15px;
+            height: 5px;
+            background-color: #dbeafe;
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #0055b8, #0077e6);
+            width: 0%;
+            transition: width 0.3s ease;
+            border-radius: 3px;
+        }
+
+        .step-indicator {
+            font-size: 12px;
+            color: #5a7a9a;
+            font-weight: 500;
+            min-width: 45px;
+            text-align: center;
+        }
+
+        @media (max-width: 720px) {
+            .slider-container {
+                width: 95vw;
+                height: 95vh;
+            }
+            .slide {
+                padding: 10px 12px;
+            }
+            .slide-title {
+                font-size: 14px;
+            }
+            .slide-description {
+                font-size: 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="slider-container" id="sliderContainer">
+    <div class="slider-header">
+        <h1>Согласование ПЛРН</h1>
+        <p>Пошаговая инструкция подачи заявления на Госуслугах</p>
+        <button class="fullscreen-btn" id="fullscreenBtn" title="На весь экран">
+            <svg id="fullscreenIcon" viewBox="0 0 24 24">
+                <path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/>
+            </svg>
+        </button>
+    </div>
+
+    <div class="slides-wrapper" id="slidesWrapper">
+        <!-- 1 -->
+        <div class="slide active" data-index="0">
+            <div class="slide-number">Шаг 1</div>
+            <div class="slide-title">Ввод запроса в поиске</div>
+            <div class="slide-description">
+                Введите в поле запрос: «Согласование планов предупреждения и ликвидации разливов нефти и нефтепродуктов». Нажмите Enter.
+            </div>
+            <div class="image-container">
+                <img src="1.png" alt="Шаг 1" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                <div class="image-placeholder">
+                    <div class="icon">🖼️</div>
+                    <p>Изображение не найдено</p>
+                    <div class="filename">1.png</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 2 -->
+        <div class="slide" data-index="1">
+            <div class="slide-number">Шаг 2</div>
+            <div class="slide-title">Выбор услуги из списка</div>
+            <div class="slide-description">
+                Выберите из предложенных вариантов «Согласование планов по предупреждению и ликвидации разливов нефти и нефтепродуктов».
+            </div>
+            <div class="image-container">
+                <img src="2.png" alt="Шаг 2" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                <div class="image-placeholder">
+                    <div class="icon">🖼️</div>
+                    <p>Изображение не найдено</p>
+                    <div class="filename">2.png</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 3 -->
+        <div class="slide" data-index="2">
+            <div class="slide-number">Шаг 3</div>
+            <div class="slide-title">Нажатие кнопки «Начать»</div>
+            <div class="slide-description">
+                Нажмите на кнопку «Начать».
+            </div>
+            <div class="image-container">
+                <img src="3.png" alt="Шаг 3" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                <div class="image-placeholder">
+                    <div class="icon">🖼️</div>
+                    <p>Изображение не найдено</p>
+                    <div class="filename">3.png</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 4 -->
+        <div class="slide" data-index="3">
+            <div class="slide-number">Шаг 4</div>
+            <div class="slide-title">Выбор цели</div>
+            <div class="slide-description">
+                Выберите цель.
+            </div>
+            <div class="image-container">
+                <img src="4.png" alt="Шаг 4" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                <div class="image-placeholder">
+                    <div class="icon">🖼️</div>
+                    <p>Изображение не найдено</p>
+                    <div class="filename">4.png</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 5 -->
+        <div class="slide" data-index="4">
+            <div class="slide-number">Шаг 5</div>
+            <div class="slide-title">Переход к заявлению</div>
+            <div class="slide-description">
+                Нажмите на кнопку «Перейти к заявлению».
+            </div>
+            <div class="image-container">
+                <img src="5.png" alt="Шаг 5" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                <div class="image-placeholder">
+                    <div class="icon">🖼️</div>
+                    <p>Изображение не найдено</p>
+                    <div class="filename">5.png</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 6 -->
+        <div class="slide" data-index="5">
+            <div class="slide-number">Шаг 6</div>
+            <div class="slide-title">Проверка сведений</div>
+            <div class="slide-description">
+                Проверьте сведения, затем нажмите на кнопку «Верно».
+            </div>
+            <div class="image-container">
+                <img src="6.png" alt="Шаг 6" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                <div class="image-placeholder">
+                    <div class="icon">🖼️</div>
+                    <p>Изображение не найдено</p>
+                    <div class="filename">6.png</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 7 -->
+        <div class="slide" data-index="6">
+            <div class="slide-number">Шаг 7</div>
+            <div class="slide-title">Проверка номера телефона</div>
+            <div class="slide-description">
+                Проверьте правильность номера телефона, затем нажмите на кнопку «Верно».
+            </div>
+            <div class="image-container">
+                <img src="7.png" alt="Шаг 7" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                <div class="image-placeholder">
+                    <div class="icon">🖼️</div>
+                    <p>Изображение не найдено</p>
+                    <div class="filename">7.png</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 8 -->
+        <div class="slide" data-index="7">
+            <div class="slide-number">Шаг 8</div>
+            <div class="slide-title">Проверка электронной почты</div>
+            <div class="slide-description">
+                Проверьте правильность электронной почты, затем нажмите на кнопку «Верно».
+            </div>
+            <div class="image-container">
+                <img src="8.png" alt="Шаг 8" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                <div class="image-placeholder">
+                    <div class="icon">🖼️</div>
+                    <p>Изображение не найдено</p>
+                    <div class="filename">8.png</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 9 -->
+        <div class="slide" data-index="8">
+            <div class="slide-number">Шаг 9</div>
+            <div class="slide-title">Проверка юридического адреса</div>
+            <div class="slide-description">
+                Проверьте правильность юридического адреса, затем нажмите на кнопку «Верно».
+            </div>
+            <div class="image-container">
+                <img src="9.png" alt="Шаг 9" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                <div class="image-placeholder">
+                    <div class="icon">🖼️</div>
+                    <p>Изображение не найдено</p>
+                    <div class="filename">9.png</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 10 -->
+        <div class="slide" data-index="9">
+            <div class="slide-number">Шаг 10</div>
+            <div class="slide-title">Данные организации</div>
+            <div class="slide-description">
+                Введите в поля фирменное наименование организации и дату присвоения ОГРН. Затем нажмите на кнопку «Продолжить».
+            </div>
+            <div class="image-container">
+                <img src="10.png" alt="Шаг 10" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                <div class="image-placeholder">
+                    <div class="icon">🖼️</div>
+                    <p>Изображение не найдено</p>
+                    <div class="filename">10.png</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 11 -->
+        <div class="slide" data-index="10">
+            <div class="slide-number">Шаг 11</div>
+            <div class="slide-title">Регион местоположения объекта</div>
+            <div class="slide-description">
+                Введите в поле регион местоположения объекта, выберите регион из выпадающего списка.
+            </div>
+            <div class="image-container">
+                <img src="11.png" alt="Шаг 11" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                <div class="image-placeholder">
+                    <div class="icon">🖼️</div>
+                    <p>Изображение не найдено</p>
+                    <div class="filename">11.png</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 12 -->
+        <div class="slide" data-index="11">
+            <div class="slide-number">Шаг 12</div>
+            <div class="slide-title">Объём разлива</div>
+            <div class="slide-description">
+                Введите в поле целое значение максимального расчётного объёма разлива нефти и нефтепродуктов из Плана ПЛРН (в тоннах), округляя в меньшую сторону (к примеру, при значении 51,6 т вводить в поле 51). Затем нажмите на кнопку «Продолжить».
+            </div>
+            <div class="image-container">
+                <img src="12.png" alt="Шаг 12" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                <div class="image-placeholder">
+                    <div class="icon">🖼️</div>
+                    <p>Изображение не найдено</p>
+                    <div class="filename">12.png</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 13 -->
+        <div class="slide" data-index="12">
+            <div class="slide-number">Шаг 13</div>
+            <div class="slide-title">Название плана ПЛРН</div>
+            <div class="slide-description">
+                Скопируйте в поле название плана ПЛРН с титульного листа. Затем нажмите на кнопку «Продолжить».
+            </div>
+            <div class="image-container">
+                <img src="13.png" alt="Шаг 13" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                <div class="image-placeholder">
+                    <div class="icon">🖼️</div>
+                    <p>Изображение не найдено</p>
+                    <div class="filename">13.png</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 14 -->
+        <div class="slide" data-index="13">
+            <div class="slide-number">Шаг 14</div>
+            <div class="slide-title">Лицензия подрядной организации</div>
+            <div class="slide-description">
+                Заполните поля с номером и датой лицензии подрядной организации на осуществление деятельности по сбору, транспортированию, обработке, утилизации, обезвреживанию, размещению отходов I-IV классов опасности — в части транспортирования отходов I-IV классов опасности. При необходимости добавьте сведения ещё одной лицензии, нажав на кнопку «Добавить ещё лицензию». Затем нажмите на кнопку «Продолжить».
+            </div>
+            <div class="image-container">
+                <img src="14.png" alt="Шаг 14" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                <div class="image-placeholder">
+                    <div class="icon">🖼️</div>
+                    <p>Изображение не найдено</p>
+                    <div class="filename">14.png</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 15 -->
+        <div class="slide" data-index="14">
+            <div class="slide-number">Шаг 15</div>
+            <div class="slide-title">Загрузка файла ПЛРН</div>
+            <div class="slide-description">
+                Перетащите файл с планом ПЛРН в выделенную область или выберите его на компьютере. Дождитесь окончания загрузки, затем нажмите на кнопку «Продолжить».
+            </div>
+            <div class="image-container">
+                <img src="15.png" alt="Шаг 15" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                <div class="image-placeholder">
+                    <div class="icon">🖼️</div>
+                    <p>Изображение не найдено</p>
+                    <div class="filename">15.png</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 16 -->
+        <div class="slide" data-index="15">
+            <div class="slide-number">Шаг 16</div>
+            <div class="slide-title">Ошибка загрузки файла</div>
+            <div class="slide-description">
+                В случае неудачной загрузки файла нажмите на кнопку «Попробовать ещё раз», затем повторите (может загрузиться только с 10-20 попытки). Также в случае возникновения ошибки может помочь обновление страницы в браузере или возврат к предыдущему шагу с помощью кнопки «Назад», после чего повторить попытку. После успешной загрузки файла нажмите на кнопку «Продолжить».
+            </div>
+            <div class="image-container">
+                <img src="16.png" alt="Шаг 16" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                <div class="image-placeholder">
+                    <div class="icon">🖼️</div>
+                    <p>Изображение не найдено</p>
+                    <div class="filename">16.png</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 17 -->
+        <div class="slide" data-index="16">
+            <div class="slide-number">Шаг 17</div>
+            <div class="slide-title">Загрузка договора с АСФ / НАСФ</div>
+            <div class="slide-description">
+                Перетащите Договор с АСФ или приказ о создании НАСФ в выделенную область или выберите их на компьютере. Дождитесь окончания загрузки. В случае неудачной загрузки файлов нажмите на кнопку «Повторить». Когда все файлы будут успешно загружены, нажмите на кнопку «Продолжить».
+            </div>
+            <div class="image-container">
+                <img src="17.png" alt="Шаг 17" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                <div class="image-placeholder">
+                    <div class="icon">🖼️</div>
+                    <p>Изображение не найдено</p>
+                    <div class="filename">17.png</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 18 -->
+        <div class="slide" data-index="17">
+            <div class="slide-number">Шаг 18</div>
+            <div class="slide-title">Территориальный орган</div>
+            <div class="slide-description">
+                Введите в поле регион местоположения объекта, выберите регион из выпадающего списка. Затем кликните в поле Территориальный орган и выберите территориальный орган (Центральный аппарат Росприроднадзора выбрать при условии превышения объемов разлива 9000 т на суше и 500 т на воде). Нажмите на кнопку «Перейти к подписанию».
+            </div>
+            <div class="image-container">
+                <img src="18.png" alt="Шаг 18" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                <div class="image-placeholder">
+                    <div class="icon">🖼️</div>
+                    <p>Изображение не найдено</p>
+                    <div class="filename">18.png</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 19 -->
+        <div class="slide" data-index="18">
+            <div class="slide-number">Шаг 19</div>
+            <div class="slide-title">Подписание документов</div>
+            <div class="slide-description">
+                Внимательно проверьте наличие всех необходимых документов в списке и нажмите на кнопку «Подписать». На этом процесс подачи заявления на согласование плана ПЛРН при помощи сайта Госуслуги завершён.
+            </div>
+            <div class="image-container">
+                <img src="19.png" alt="Шаг 19" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                <div class="image-placeholder">
+                    <div class="icon">🖼️</div>
+                    <p>Изображение не найдено</p>
+                    <div class="filename">19.png</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 20 -->
+        <div class="slide" data-index="19">
+            <div class="slide-number">Шаг 20</div>
+            <div class="slide-title">Отслеживание результата</div>
+            <div class="slide-description">
+                Отследить процесс согласования плана ПЛРН можно через меню «Заявления». После успешной подачи заявления в списке появится сообщение «Заявление зарегистрировано». Результаты согласования можно увидеть, открыв сообщение «Услуга оказана». Здесь же есть возможность скачать результаты.
+            </div>
+            <div class="image-container">
+                <img src="20.png" alt="Шаг 20" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                <div class="image-placeholder">
+                    <div class="icon">🖼️</div>
+                    <p>Изображение не найдено</p>
+                    <div class="filename">20.png</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="slider-footer">
+        <button class="nav-btn" id="prevBtn" disabled>Назад</button>
+        <div class="progress-container">
+            <div class="progress-bar" id="progressBar"></div>
+        </div>
+        <div class="step-indicator" id="stepIndicator">1 / 20</div>
+        <button class="nav-btn" id="nextBtn">Вперед</button>
+    </div>
+</div>
+
+<script>
+    const slides = document.querySelectorAll('.slide');
+    const prevBtn = document.getElementById('prevBtn');
+    const nextBtn = document.getElementById('nextBtn');
+    const progressBar = document.getElementById('progressBar');
+    const stepIndicator = document.getElementById('stepIndicator');
+    const sliderContainer = document.getElementById('sliderContainer');
+    const fullscreenBtn = document.getElementById('fullscreenBtn');
+    const fullscreenIcon = document.getElementById('fullscreenIcon');
+
+    let currentIndex = 0;
+    const totalSlides = slides.length;
+
+    const iconExpand = "M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z";
+    const iconCompress = "M5 16h3v3h2v-5H5v2zm3-8H5v2h5V5H8v3zm6 11h2v-3h3v-2h-5v5zm2-11V5h-2v5h5V8h-3z";
+
+    function updateSlider() {
+        slides.forEach((slide, index) => {
+            slide.classList.toggle('active', index === currentIndex);
+        });
+
+        prevBtn.disabled = currentIndex === 0;
+        nextBtn.disabled = currentIndex === totalSlides - 1;
+
+        const progress = ((currentIndex + 1) / totalSlides) * 100;
+        progressBar.style.width = progress + '%';
+        stepIndicator.textContent = `${currentIndex + 1} / ${totalSlides}`;
+    }
+
+    prevBtn.addEventListener('click', () => {
+        if (currentIndex > 0) {
+            currentIndex--;
+            updateSlider();
+        }
+    });
+
+    nextBtn.addEventListener('click', () => {
+        if (currentIndex < totalSlides - 1) {
+            currentIndex++;
+            updateSlider();
+        }
+    });
+
+    function isFullscreen() {
+        return document.fullscreenElement === sliderContainer ||
+               document.webkitFullscreenElement === sliderContainer;
+    }
+
+    function toggleFullscreen() {
+        if (!isFullscreen()) {
+            if (sliderContainer.requestFullscreen) {
+                sliderContainer.requestFullscreen();
+            } else if (sliderContainer.webkitRequestFullscreen) {
+                sliderContainer.webkitRequestFullscreen();
+            }
+        } else {
+            if (document.exitFullscreen) {
+                document.exitFullscreen();
+            } else if (document.webkitExitFullscreen) {
+                document.webkitExitFullscreen();
+            }
+        }
+    }
+
+    function updateFullscreenIcon() {
+        const path = fullscreenIcon.querySelector('path');
+        if (isFullscreen()) {
+            path.setAttribute('d', iconCompress);
+            fullscreenBtn.title = "Свернуть";
+        } else {
+            path.setAttribute('d', iconExpand);
+            fullscreenBtn.title = "На весь экран";
+        }
+    }
+
+    fullscreenBtn.addEventListener('click', toggleFullscreen);
+    document.addEventListener('fullscreenchange', updateFullscreenIcon);
+    document.addEventListener('webkitfullscreenchange', updateFullscreenIcon);
+
+    updateSlider();
+</script>
+
+</body>
+</html>
